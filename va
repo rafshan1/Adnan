@@ -1,0 +1,70 @@
+import speech_recognition as sr
+import pyttsx3
+import streamlit as st
+import wikipedia
+import datetime
+import webbrowser
+
+r=sr.Recognizer()
+def main():
+    st.title("Inspiration")
+    def listen():
+        with sr.Microphone() as source:
+            r.adjust_for_ambient_noise(source)
+            st.write("Listening....")
+            audio=r.listen(source)
+        try:
+            st.write("Recognizing....")
+            command=r.recognize_google(audio)
+            st.write(f"You said: {command}")
+            return command
+        except sr.UnknownValueError:
+            st.write("Sorry,I cant understand this command!")
+            return ""
+        except sr.RequestError:
+            st.write("Unabel to take this command!")
+            return ""
+    def speak(text):
+        engine=pyttsx3.init()
+        voices=engine.getProperty('voices')
+        engine.setProperty('voice',voices[0].id)
+
+        engine.say(text)
+        engine.runAndWait()
+        
+    st.write('''Hellow,I am your virtual assistant.
+             How can i help you?''')
+    st.image("Virtual assistant.gif")
+
+    st.sidebar.title("Commands")
+    command=st.sidebar.selectbox("Select command",['Time','Youtube',"Chatgpt",'Search'])
+    if command=="Time":
+        time=datetime.datetime.now().strftime("%I:%M%p")
+        st.image("clock.gif")
+        st.write(f"Current time is {time}")
+        speak(f"Current time is {time}")
+    elif command=="Youtube":
+        webbrowser.open("https://www.youtube.com/")
+    elif command=="Chatgpt":
+        webbrowser.open("https://chatgpt.com/?oai-dm=1"),
+    elif command=="Search":
+        st.image("search1.gif")
+        topic=st.text_input("Ask anything")
+        if st.button("Search"):
+            try:
+            
+                result=wikipedia.summary(topic,sentences=10)
+            
+                st.write(result)
+            
+            except wikipedia.DisambiguationError as e:
+            
+                st.write(f"Multipule result found for this {topic}:please be more specific")
+            
+            except wikipedia.PageError as e:
+            
+                st.write(f"No wikipedia page found for this {topic}")
+if __name__=="__main__":
+    main()
+
+                     
